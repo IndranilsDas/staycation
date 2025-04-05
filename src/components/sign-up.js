@@ -1,41 +1,46 @@
-import React, { useState } from "react"
-import { signUpforUsers } from "../lib/auth" // Adjust path if needed
+import React, { useState } from "react";
+import { signUpforUsers } from "../lib/auth"; // Adjust path if needed
 
-const SignupModal = ({ isVisible, onClose }) => {
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
-  const [loading, setLoading] = useState(false)
+const SignupModal = ({ isVisible, onClose, onOpenLogin }) => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
-    setSuccess("")
+    e.preventDefault();
+    setError("");
+    setSuccess("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      return
+      setError("Passwords do not match");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      await signUpforUsers(email, password, "customer") // Role is 'customer'
+      await signUpforUsers(email, password, "customer"); // Role is 'customer'
 
-      setSuccess("Signup successful!")
-      setUsername("")
-      setEmail("")
-      setPassword("")
-      setConfirmPassword("")
+      setSuccess("Signup successful!");
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
     } catch (err) {
-      console.error(err)
-      setError("Failed to sign up. Please try again.")
+      console.error(err);
+      setError("Failed to sign up. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  const handleLoginClick = () => {
+    onClose(); // Close SignupModal
+    onOpenLogin(); // Open LoginModal
+  };
 
   return (
     <div
@@ -117,6 +122,15 @@ const SignupModal = ({ isVisible, onClose }) => {
           </button>
         </form>
 
+        <div className="text-center mt-4">
+          <button
+            onClick={handleLoginClick}
+            className="text-sm text-blue-500 hover:underline"
+          >
+            Already a user? Login
+          </button>
+        </div>
+
         <p className="text-xs text-gray-500 text-center mt-4">
           By signing up, you agree to our{" "}
           <a href="#" className="text-blue-500">
@@ -136,7 +150,7 @@ const SignupModal = ({ isVisible, onClose }) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SignupModal
+export default SignupModal;
