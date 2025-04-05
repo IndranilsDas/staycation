@@ -51,6 +51,26 @@ export default function AdminDrawer({ isDrawerOpen, toggleDrawer }) {
             </Tooltip>
           )}
         </li>
+        
+
+        <li className="group">
+          <Link
+            href="/admin/add-destinations"
+            className="flex items-center space-x-3 text-gray-200 hover:bg-gray-700 p-2 rounded transition"
+          >
+            <span style={iconWrapperStyle}>
+              <FaHome className="text-xl" />
+            </span>
+            {isDrawerOpen && <span>Destinations</span>}
+          </Link>
+          {!isDrawerOpen && (
+            <Tooltip id="destinations-tooltip" place="right" effect="solid">
+              Destinations
+            </Tooltip>
+          )}
+        </li>
+
+
 
         {/* Villas */}
         <li className="group">
