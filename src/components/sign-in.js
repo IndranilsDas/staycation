@@ -1,38 +1,39 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { auth } from "../lib/firebase";
 
 const LoginModal = ({ isVisible, onClose, onOpenSignup }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [loginSuccess, setLoginSuccess] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (loginSuccess) {
+      const timer = setTimeout(() => {
+        onClose(); // Close modal first
+        router.push("/"); // Then redirect
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [loginSuccess, router, onClose]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitError("");
+    setLoginSuccess(false);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Check if the user is an admin
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists() && userDoc.data().role === "admin") {
-        // Redirect to admin dashboard
-        router.push("/admin/hero-form");
-      } else {
-        setSubmitError("Unauthorized access. Not an admin account.");
-      }
+      await signInWithEmailAndPassword(auth, email, password);
+      setLoginSuccess(true); // Trigger success state
     } catch (error) {
       console.error(error);
-      setSubmitError("Invalid email or password.");
-    } finally {
+      setSubmitError("Invalid email or password. Please try again.");
       setIsSubmitting(false);
     }
   };
@@ -57,6 +58,12 @@ const LoginModal = ({ isVisible, onClose, onOpenSignup }) => {
         {submitError && (
           <div className="mt-2 text-sm text-red-600 text-center">{submitError}</div>
         )}
+        
+        {loginSuccess && (
+          <div className="mt-2 text-sm text-green-600 text-center">
+            Login successful! Redirecting...
+          </div>
+        )}
 
         <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
           <div>
@@ -70,6 +77,7 @@ const LoginModal = ({ isVisible, onClose, onOpenSignup }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isSubmitting || loginSuccess}
             />
           </div>
 
@@ -84,14 +92,15 @@ const LoginModal = ({ isVisible, onClose, onOpenSignup }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isSubmitting || loginSuccess}
             />
           </div>
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || loginSuccess}
             className={`w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition ${
-              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              isSubmitting || loginSuccess ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
             {isSubmitting ? "Signing in..." : "Login"}
@@ -102,13 +111,17 @@ const LoginModal = ({ isVisible, onClose, onOpenSignup }) => {
           <button
             onClick={handleSignupClick}
             className="text-sm text-blue-500 hover:underline"
+            disabled={isSubmitting || loginSuccess}
           >
             Don't have an account? Sign up
           </button>
         </div>
 
         <div className="text-center mt-2">
-          <button className="text-sm text-blue-500 hover:underline">
+          <button 
+            className="text-sm text-blue-500 hover:underline"
+            disabled={isSubmitting || loginSuccess}
+          >
             Forgot password?
           </button>
         </div>
@@ -127,6 +140,7 @@ const LoginModal = ({ isVisible, onClose, onOpenSignup }) => {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-xl font-bold text-gray-500 hover:text-gray-700"
+          disabled={isSubmitting}
         >
           ✕
         </button>

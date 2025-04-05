@@ -51,6 +51,9 @@ function PrivateRoute({ children }) {
       }
     }
   }, [user, role, loading, pathname, router]);
+  console.log("User:", user);
+  console.log("Role:", role);
+  console.log("Loading:", loading);
 
   const handleSignupSuccess = (userData) => {
     setIsSignupVisible(false);
