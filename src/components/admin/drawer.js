@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { FaBars, FaLayerGroup, FaHome, FaDatabase, FaSignOutAlt } from "react-icons/fa";
+import { RiVipCrownFill } from "react-icons/ri";
 import { Tooltip } from "react-tooltip"; // Ensure `react-tooltip` is installed
 import { useAuth } from "../../lib/authcontext"; // Import useAuth hook
 
@@ -103,6 +104,23 @@ export default function AdminDrawer({ isDrawerOpen, toggleDrawer }) {
           </Link>
           {!isDrawerOpen && (
             <Tooltip id="collections-tooltip" place="right" effect="solid">
+              Collections
+            </Tooltip>
+          )}
+        </li>
+
+        <li className="group">
+          <Link
+            href="/admin/add_celebs"
+            className="flex items-center space-x-3 text-gray-200 hover:bg-gray-700 p-2 rounded transition"
+          >
+            <span style={iconWrapperStyle}>
+              <RiVipCrownFill className="text-xl" />
+            </span>
+            {isDrawerOpen && <span>Celebrity Customers</span>}
+          </Link>
+          {!isDrawerOpen && (
+            <Tooltip id="Celebs-tooltip" place="right" effect="solid">
               Collections
             </Tooltip>
           )}
