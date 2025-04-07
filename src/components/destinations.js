@@ -2,6 +2,12 @@
 import { useState, useEffect } from "react"
 import { GrMapLocation } from "react-icons/gr"
 import { fetchDestinations } from "../lib/firebase"
+import { Prompt } from 'next/font/google'
+
+const prompt = Prompt({
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "600", "800"],
+})
 
 export default function Destinations() {
   const [destinations, setDestinations] = useState([])
@@ -22,31 +28,37 @@ export default function Destinations() {
   }, [])
 
   return (
-    <section className="bg-gray-50 py-16">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-start items-center gap-4 mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900">Pick a Destination</h2>
-          <div className="flex text-gray-700 gap-2 items-center cursor-pointer">
-            <GrMapLocation className="h-4 w-4" />
-            <span className="text-sm underline">Show nearby locations</span>
+    <section className={`${prompt.className} bg-white py-12 pt-24`}>
+      <div className="px-4 md:px-20">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-semibold text-black">Pick a Destination</h2>
+          <div className="flex items-center text-sm text-blue-600 hover:underline cursor-pointer gap-1">
+            <GrMapLocation className="w-4 h-4" />
+            <span>Show nearby locations</span>
           </div>
         </div>
 
+        {/* Loading or Grid */}
         {loading ? (
           <div className="flex justify-center items-center p-10">
             <div className="animate-pulse">Loading destinations...</div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
             {destinations.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center p-4 rounded-lg hover:bg-orange-200 cursor-pointer transition duration-300"
+                className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-xl shadow hover:bg-orange-100 transition-all duration-300 cursor-pointer"
               >
-                <div className="bg-orange-100 rounded-full p-2 mb-2">
-                  <img src={item.image || "/placeholder.svg"} className="h-12 w-12" alt={item.place} />
+                <div className="bg-orange-200 rounded-full p-3 mb-2">
+                  <img
+                    src={item.image || "/placeholder.svg"}
+                    className="h-10 w-10 object-contain"
+                    alt={item.place}
+                  />
                 </div>
-                <h3 className="text-gray-700 text-sm font-medium">{item.place}</h3>
+                <span className="text-sm text-gray-800 font-medium">{item.place}</span>
               </div>
             ))}
           </div>

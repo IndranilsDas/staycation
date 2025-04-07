@@ -8,11 +8,9 @@ const prompt = Prompt({
   weight: ["200", "300", "400", "600", "800"],
 })
 
-// Tabs (what the user sees)
 const tabs = [{ text: "All" }, { text: "Bank offers" }, { text: "StayVista offers" }]
 
 export default function Offers() {
-  // Track which tab is active
   const [activeTab, setActiveTab] = useState("All")
   const [offers, setOffers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -25,7 +23,6 @@ export default function Offers() {
         setOffers(data)
       } catch (error) {
         console.error("Error fetching offers:", error)
-        // Fallback data
         setOffers([
           {
             description:
@@ -50,66 +47,67 @@ export default function Offers() {
     getOffers()
   }, [activeTab])
 
-  // Copy coupon code to clipboard
   const copyCode = (code) => {
     navigator.clipboard.writeText(code)
     alert(`Copied: ${code}`)
   }
 
   return (
-    <section className={`${prompt.className} bg-white`}>
-      <div className="flex flex-col px-6 md:px-26">
-        <h1 className="text-3xl text-black py-4 font-semibold">Offers for You</h1>
+    <section className={`${prompt.className} bg-white py-12`}>
+      <div className="px-4 md:px-20">
+        {/* Heading */}
+        <h2 className="text-3xl font-semibold text-black mb-4">Offers for You</h2>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-4 overflow-x-auto">
+        <div className="flex gap-3 overflow-x-auto mb-6 scrollbar-hide">
           {tabs.map((item, index) => (
             <button
               key={index}
-              className={`px-4 py-2 text-black bg-gray-100 rounded-lg duration-300 
-                hover:bg-blue-100 hover:text-blue-800 
-                ${activeTab === item.text ? "bg-blue-100 text-blue-800" : ""}`}
               onClick={() => setActiveTab(item.text)}
+              className={`px-4 py-2 rounded-full whitespace-nowrap border transition 
+                ${
+                  activeTab === item.text
+                    ? "bg-blue-100 text-blue-800 border-blue-200"
+                    : "bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200"
+                }`}
             >
               {item.text}
             </button>
           ))}
         </div>
 
-        {/* Single-row horizontally scrollable offers */}
+        {/* Offers Row */}
         {loading ? (
           <div className="flex justify-center items-center p-10">
             <div className="animate-pulse">Loading offers...</div>
           </div>
         ) : (
-          <div className="flex flex-nowrap gap-4 overflow-x-auto py-2 justify-around">
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide">
             {offers.map((offer, index) => (
               <div
                 key={index}
-                className="
-                  border border-gray-200 
-                  rounded-lg p-4 flex-shrink-0 
-                  w-[250px]  /* Adjust width to match your preferred size */
-                "
+                className="flex-shrink-0 w-[260px] bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
               >
-                {/* Top Row: Title + Type */}
+                {/* Title & Type */}
                 <div className="flex items-center justify-between mb-2">
-                  <div className="font-semibold">{offer.title || "Bank"}</div>
-                  <div className="text-sm text-gray-500 capitalize">
+                  <h3 className="font-semibold text-gray-900">{offer.title || "Bank"}</h3>
+                  <span className="text-xs text-gray-500 capitalize">
                     {offer.type === "bank_offer" ? "Bank Offer" : "StayVista Offer"}
-                  </div>
+                  </span>
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-gray-700 mb-2">{offer.description}</p>
+                <p className="text-sm text-gray-700 mb-3">{offer.description}</p>
                 <p className="text-xs text-gray-400">*T&C apply</p>
 
-                {/* Bottom Row: Code + Copy Button */}
-                <div className="flex items-center justify-between mt-2">
-                  <div className="bg-gray-500 rounded px-2 py-1 text-sm font-mono">{offer.code}</div>
+                {/* Code & Copy */}
+                <div className="flex items-center justify-between mt-4">
+                  <div className="bg-gray-200 text-gray-800 font-mono px-2 py-1 rounded text-sm">
+                    {offer.code}
+                  </div>
                   <button
                     onClick={() => copyCode(offer.code)}
-                    className="bg-black text-white text-sm px-4 py-1 rounded"
+                    className="bg-black text-white text-sm px-3 py-1 rounded hover:bg-gray-800"
                   >
                     Copy
                   </button>
@@ -122,4 +120,3 @@ export default function Offers() {
     </section>
   )
 }
-

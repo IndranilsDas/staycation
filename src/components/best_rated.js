@@ -29,7 +29,6 @@ export default function BestRated() {
         setListings(data)
       } catch (error) {
         console.error("Error fetching best rated listings:", error)
-        // Fallback data
         setListings([
           {
             id: "fallback1",
@@ -54,16 +53,16 @@ export default function BestRated() {
   }, [selectedTab])
 
   const scrollLeft = () => {
-    scrollRef.current.scrollBy({ left: -300, behavior: "smooth" })
+    scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" })
   }
 
   const scrollRight = () => {
-    scrollRef.current.scrollBy({ left: 300, behavior: "smooth" })
+    scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" })
   }
 
   const toggleFavorite = (e, id) => {
-    e.preventDefault() // Prevent navigation when clicking the favorite button
-    e.stopPropagation() // Stop event from bubbling up
+    e.preventDefault()
+    e.stopPropagation()
     setFavorites((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -71,22 +70,20 @@ export default function BestRated() {
   }
 
   return (
-    <section className={`${prompt.className} p-6 bg-white`}>
-      {/* Heading + Tabs */}
-      <div className="flex justify-between items-center px-16 mb-4">
-        <h1 className="text-left font-semibold text-3xl text-black">Best Rated</h1>
-      </div>
+    <section className={`${prompt.className} bg-white py-16 px-4 md:px-20`}>
+      {/* Heading */}
+      <h2 className="font-semibold text-3xl mb-4 text-center md:text-left">Best Rated</h2>
 
       {/* Tabs */}
-      <div className="flex gap-4 px-16 mb-4 py-4 overflow-x-auto">
+      <div className="flex gap-3 overflow-x-auto scrollbar-hide mb-6">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setSelectedTab(tab)}
-            className={`px-4 py-2 rounded-md transition ${
+            className={`px-4 py-2 whitespace-nowrap rounded-full transition text-sm ${
               selectedTab === tab
-                ? "bg-black/50 text-white" // Active state style
-                : "bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600"
+                ? "bg-black text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             {tab}
@@ -94,18 +91,21 @@ export default function BestRated() {
         ))}
       </div>
 
-      {/* Scrollable Cards */}
-      <div className="relative w-full">
-        {/* Left Button */}
+      {/* Carousel */}
+      <div className="relative">
+        {/* Scroll Left */}
         <button
           onClick={scrollLeft}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-300 p-2 shadow-md rounded-full"
+          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-300 p-2 shadow-md rounded-full"
         >
           <FaChevronLeft />
         </button>
 
         {/* Cards */}
-        <div ref={scrollRef} className="flex gap-4 overflow-clip py-2 scroll-smooth no-scrollbar px-16">
+        <div
+          ref={scrollRef}
+          className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-2"
+        >
           {loading ? (
             <div className="flex justify-center items-center w-full p-10">
               <div className="animate-pulse">Loading best rated properties...</div>
@@ -121,27 +121,29 @@ export default function BestRated() {
                 href={`/villas/${listing.id}`}
                 className="cursor-pointer"
               >
-                <div className="flex flex-col m-auto min-w-[280px] max-w-[280px] border rounded-lg ring ring-gray-300 shadow-xl bg-white hover:shadow-2xl transition-all duration-300">
-                  {/* Image Container */}
+                <div className="flex flex-col min-w-[260px] max-w-[260px] border rounded-xl shadow-md bg-white hover:shadow-xl transition-all duration-300 overflow-hidden">
+                  {/* Image */}
                   <div className="relative">
                     <img
                       src={listing.image || "/placeholder.svg"}
                       alt={listing.name}
-                      className="w-full h-[200px] object-cover"
+                      className="w-full h-[180px] object-cover"
                     />
 
                     {/* Rating */}
-                    <div className="absolute top-2 left-2 bg-white text-black px-2 py-1 rounded-full text-sm">
+                    <div className="absolute top-2 left-2 bg-white text-black px-2 py-1 rounded-full text-xs font-medium shadow">
                       ⭐ {listing.rating}
                     </div>
 
-                    {/* Favorite Button */}
+                    {/* Favorite */}
                     <button
                       onClick={(e) => toggleFavorite(e, listing.id)}
                       className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md"
                     >
                       <CiHeart
-                        className={`text-xl ${favorites[listing.id] ? "text-red-500 fill-red-500" : "text-black"}`}
+                        className={`text-xl ${
+                          favorites[listing.id] ? "text-red-500 fill-red-500" : "text-black"
+                        }`}
                       />
                     </button>
 
@@ -154,23 +156,20 @@ export default function BestRated() {
                   </div>
 
                   {/* Info */}
-                  <div className="p-4">
-                    <h2 className="font-semibold text-lg">{listing.name}</h2>
-                    <p className="text-gray-500 text-sm mb-1">{listing.location}</p>
-                    <p className="text-gray-500 text-sm h-10">
+                  <div className="p-3">
+                    <h3 className="font-semibold text-base mb-1">{listing.name}</h3>
+                    <p className="text-gray-500 text-xs mb-1">{listing.location}</p>
+                    <p className="text-gray-500 text-xs">
                       Upto {listing.guests} Guests • {listing.rooms} Rooms • {listing.baths} Baths
                     </p>
 
                     {/* Price */}
-                    <div className="flex justify-between items-center mt-3">
-                      <div>
-                        <span className="text-lg font-semibold">{listing.price}</span>
-                        {listing.oldPrice && <span className="text-gray-400 line-through ml-2">{listing.oldPrice}</span>}
-                        <p className="text-gray-400 text-sm">For Per Night + Taxes</p>
-                      </div>
-                      <div className="bg-white border rounded-full p-2 shadow-md">
-                        <FaChevronRight />
-                      </div>
+                    <div className="mt-3 text-sm">
+                      <span className="font-semibold text-base">{listing.price}</span>
+                      {listing.oldPrice && (
+                        <span className="text-gray-400 line-through ml-2">{listing.oldPrice}</span>
+                      )}
+                      <p className="text-gray-400 text-xs">Per Night + Taxes</p>
                     </div>
                   </div>
                 </div>
@@ -179,10 +178,10 @@ export default function BestRated() {
           )}
         </div>
 
-        {/* Right Button */}
+        {/* Scroll Right */}
         <button
           onClick={scrollRight}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-300 p-2 shadow-md rounded-full"
+          className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-300 p-2 shadow-md rounded-full"
         >
           <FaChevronRight />
         </button>

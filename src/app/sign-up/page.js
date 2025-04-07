@@ -129,7 +129,7 @@ export default function AdminSignup() {
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
-              <a href="/admin/sign-in" className="text-blue-600 hover:underline">
+              <a href="/sign-in" className="text-blue-600 hover:underline">
                 Sign-in
               </a>
             </p>

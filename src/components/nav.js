@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { Prompt } from "next/font/google";
 import { CiBellOn } from "react-icons/ci";
-import { FaUserCircle, FaSearch, FaHome, FaClipboardList } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
 import { LuPhoneCall } from "react-icons/lu";
-import SignupModal from "./sign-up"; // Adjust path if needed
-import LoginModal from "./sign-in"; // Adjust path if needed
+import SignupModal from "./sign-up";
+import LoginModal from "./sign-in";
 
 const prompt = Prompt({
   subsets: ["latin"],
@@ -18,11 +18,7 @@ export default function Nav() {
   const [isUnder, setIsUnder] = useState(false);
   const [isSignupVisible, setIsSignupVisible] = useState(false);
   const [isLoginVisible, setIsLoginVisible] = useState(false);
-
-  const handleSignupSubmit = (phoneNumber) => {
-    console.log("User phone number:", phoneNumber);
-    // Here, you can check the phone number, send OTP, etc.
-  };
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,6 +37,14 @@ export default function Nav() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = () => setIsMenuOpen(false);
+    if (isMenuOpen) {
+      window.addEventListener("click", handleClickOutside);
+    }
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, [isMenuOpen]);
+
   const openSignup = () => {
     setIsSignupVisible(true);
     setIsLoginVisible(false);
@@ -57,31 +61,29 @@ export default function Nav() {
 
   return (
     <div className={`${prompt.className}`}>
-      {isUnder ? (
-        <nav>
-          <div
-            className={`fixed w-full top-0 z-50 transition duration-300 
-            ${scrolled ? "backdrop-blur-md shadow-xl" : "bg-transparent"}`}
-          >
-            {tempNav && (
-              <div className="relative flex items-center justify-between bg-gradient-to-r from-blue-300 to-orange-300 py-2 px-4 text-xs sm:text-sm md:text-base">
-                <span className="text-black text-center flex-1">
-                  FLAT 15% OFF on your next escape. Use code: <strong>WIN15</strong>
-                </span>
-                <button
-                  onClick={() => setTempNav(false)}
-                  className="text-white font-bold"
-                >
-                  ✕
-                </button>
-              </div>
-            )}
+      <nav>
+        <div
+          className={`fixed w-full top-0 z-50 transition duration-300 ${
+            scrolled ? "backdrop-blur-md shadow-xl" : "bg-transparent"
+          }`}
+        >
+          {tempNav && (
+            <div className="relative flex items-center justify-between bg-gradient-to-r from-blue-300 to-orange-300 py-2 px-4 text-xs sm:text-sm md:text-base">
+              <span className="text-black text-center flex-1">
+                FLAT 15% OFF on your next escape. Use code: <strong>WIN15</strong>
+              </span>
+              <button onClick={() => setTempNav(false)} className="text-white font-bold">
+                ✕
+              </button>
+            </div>
+          )}
 
-            <div className="flex flex-wrap items-center justify-between px-4 md:px-6 py-3">
+          {isUnder ? (
+            <div className="flex items-center justify-between px-2 md:px-4 py-3">
               <div className="flex items-center">
                 <img
                   src="images/stayvista_logo.svg"
-                  className={`h-10 w-20 ${scrolled ? "invert-0" : "invert"}`}
+                  className={`h-8 w-16 ${scrolled ? "invert-0" : "invert"}`}
                   alt="StayVista Logo"
                 />
               </div>
@@ -95,24 +97,21 @@ export default function Nav() {
                   Explore
                 </button>
                 <button
-                  className={`flex items-center gap-1 text-xs sm:text-sm md:text-base uppercase font-semibold px-2 md:px-3 py-1 md:py-2 rounded 
-                  ${
+                  className={`flex items-center gap-1 text-xs sm:text-sm md:text-base uppercase font-semibold px-2 md:px-3 py-1 md:py-2 rounded ${
                     scrolled ? "ring ring-black text-black" : "ring ring-white text-white"
                   } hover:bg-orange-300 hover:text-black transition duration-200`}
                 >
                   Buy a Property
                 </button>
                 <button
-                  className={`flex items-center gap-1 text-xs sm:text-sm md:text-base uppercase font-semibold px-2 md:px-3 py-1 md:py-2 rounded 
-                  ${
+                  className={`flex items-center gap-1 text-xs sm:text-sm md:text-base uppercase font-semibold px-2 md:px-3 py-1 md:py-2 rounded ${
                     scrolled ? "ring ring-black text-black" : "ring ring-white text-white"
                   } hover:bg-orange-300 hover:text-black transition duration-200`}
                 >
                   List Your Property
                 </button>
                 <button
-                  className={`flex items-center gap-1 text-xs sm:text-sm md:text-base uppercase font-semibold px-2 md:px-3 py-1 md:py-2 rounded 
-                  ${
+                  className={`flex items-center gap-1 text-xs sm:text-sm md:text-base uppercase font-semibold px-2 md:px-3 py-1 md:py-2 rounded ${
                     scrolled ? "ring ring-black text-black" : "ring ring-white text-white"
                   } hover:bg-orange-300 hover:text-black transition duration-200`}
                 >
@@ -135,14 +134,7 @@ export default function Nav() {
                 </button>
               </div>
             </div>
-          </div>
-        </nav>
-      ) : (
-        <nav>
-          <div
-            className={`fixed w-full top-0 z-50 transition duration-300 
-            ${scrolled ? "backdrop-blur-md shadow-xl" : "bg-transparent"}`}
-          >
+          ) : (
             <div className="flex flex-wrap items-center justify-between px-4 py-3">
               <div className="flex items-center">
                 <img
@@ -158,24 +150,7 @@ export default function Nav() {
                     scrolled ? "text-black" : "text-white"
                   } hover:text-orange-300 transition`}
                 >
-                  <FaSearch className="h-5 w-5" />
                   <span>Explore</span>
-                </button>
-                <button
-                  className={`flex items-center gap-1 text-xs ${
-                    scrolled ? "text-black" : "text-white"
-                  } hover:text-orange-300 transition`}
-                >
-                  <FaHome className="h-5 w-5" />
-                  <span>Buy</span>
-                </button>
-                <button
-                  className={`flex items-center gap-1 text-xs ${
-                    scrolled ? "text-black" : "text-white"
-                  } hover:text-orange-300 transition`}
-                >
-                  <FaClipboardList className="h-5 w-5" />
-                  <span>List</span>
                 </button>
                 <button
                   className={`flex items-center gap-1 text-xs ${
@@ -193,30 +168,55 @@ export default function Nav() {
                   <CiBellOn className="h-5 w-5" />
                   <span>Alerts</span>
                 </button>
-                <button
-                  onClick={openSignup}
-                  className={`flex items-center gap-1 text-xs ${
-                    scrolled ? "text-black" : "text-white"
-                  } hover:text-orange-300 transition`}
-                >
-                  <FaUserCircle className="h-5 w-5" />
-                  <span>Profile</span>
-                </button>
+
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMenuOpen(!isMenuOpen);
+                    }}
+                    className={`flex items-center gap-1 text-xs ${
+                      scrolled ? "text-black" : "text-white"
+                    } hover:text-orange-300 transition`}
+                  >
+                    ☰ Menu
+                  </button>
+
+                  {isMenuOpen && (
+                    <div
+                      className="absolute right-0 mt-2 w-44 bg-white text-black rounded-xl shadow-2xl z-50 animate-fadeIn"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        onClick={openSignup}
+                        className="w-full text-left px-5 py-3 hover:bg-orange-100 rounded-b-xl"
+                      >
+                        Profile
+                      </button>
+                      <button className="w-full text-left px-5 py-3 hover:bg-orange-100 rounded-t-xl">
+                        Buy a Property
+                      </button>
+                      <button className="w-full text-left px-5 py-3 hover:bg-orange-100">
+                        List Your Property
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </nav>
-      )}
+          )}
+        </div>
+      </nav>
 
       <SignupModal
         isVisible={isSignupVisible}
         onClose={closeSignup}
-        onOpenLogin={openLogin} // Pass callback to open LoginModal
+        onOpenLogin={openLogin}
       />
       <LoginModal
         isVisible={isLoginVisible}
         onClose={closeLogin}
-        onOpenSignup={openSignup} // Pass callback to open SignupModal
+        onOpenSignup={openSignup}
       />
     </div>
   );
