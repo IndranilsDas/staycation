@@ -1,12 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
-import { Prompt } from "next/font/google"
 import { fetchOffers } from "../lib/firebase"
-
-const prompt = Prompt({
-  subsets: ["latin"],
-  weight: ["200", "300", "400", "600", "800"],
-})
+import { Copy } from "lucide-react"
 
 const tabs = [{ text: "All" }, { text: "Bank offers" }, { text: "StayVista offers" }]
 
@@ -25,18 +20,14 @@ export default function Offers() {
         console.error("Error fetching offers:", error)
         setOffers([
           {
-            description:
-              "Get 11% off (up to ₹3000) on your StayVista booking when you pay with an HSBC TravelOne Credit Card.",
+            title: "Get 11% off (up to ₹3000) on your StayVista booking when you pay with an HSBC TravelOne Credit Card.",
             type: "bank_offer",
-            code: "HSBCTRAVELONE",
-            title: "HSBC",
+            code: "HSBCTRAVEL",
           },
           {
-            description:
-              "Enjoy FLAT 50% OFF on 2nd night when you book our newly launched vistas for your next holiday adventure.",
+            title: "Enjoy FLAT 50% OFF on 2nd night when you book our newly launched vistas.",
             type: "stayvista_offer",
             code: "NEWVISTAS",
-            title: "StayVista",
           },
         ])
       } finally {
@@ -53,9 +44,8 @@ export default function Offers() {
   }
 
   return (
-    <section className={`${prompt.className} bg-white py-12`}>
+    <section className="font-[Prompt] bg-white py-12">
       <div className="px-4 md:px-20">
-        {/* Heading */}
         <h2 className="text-3xl font-semibold text-black mb-4">Offers for You</h2>
 
         {/* Tabs */}
@@ -76,7 +66,7 @@ export default function Offers() {
           ))}
         </div>
 
-        {/* Offers Row */}
+        {/* Offers */}
         {loading ? (
           <div className="flex justify-center items-center p-10">
             <div className="animate-pulse">Loading offers...</div>
@@ -88,27 +78,33 @@ export default function Offers() {
                 key={index}
                 className="flex-shrink-0 w-[260px] bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
               >
-                {/* Title & Type */}
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900">{offer.title || "Bank"}</h3>
-                  <span className="text-xs text-gray-500 capitalize">
+                  <img
+                    src="/hsbc-logo.png" // Use dynamic image based on offer later if needed
+                    alt={offer.title}
+                    className="h-6"
+                  />
+                  <span className="rounded text-xs px-2 py-1 bg-gray-100 text-gray-600 border border-gray-300">
                     {offer.type === "bank_offer" ? "Bank Offer" : "StayVista Offer"}
                   </span>
                 </div>
 
-                {/* Description */}
-                <p className="text-sm text-gray-700 mb-3">{offer.description}</p>
-                <p className="text-xs text-gray-400">*T&C apply</p>
+                {/* Title (Main Offer Text) */}
+                <p className="text-sm text-gray-800 font-medium mt-2 mb-1">
+                  {offer.title}
+                </p>
 
-                {/* Code & Copy */}
-                <div className="flex items-center justify-between mt-4">
+                <p className="text-xs text-gray-400 mb-3">*T&C apply</p>
+
+                <div className="flex items-center justify-between mt-auto">
                   <div className="bg-gray-200 text-gray-800 font-mono px-2 py-1 rounded text-sm">
                     {offer.code}
                   </div>
                   <button
                     onClick={() => copyCode(offer.code)}
-                    className="bg-black text-white text-sm px-3 py-1 rounded hover:bg-gray-800"
+                    className="bg-black text-white text-sm px-3 py-1 rounded hover:bg-gray-800 flex items-center"
                   >
+                    <Copy className="h-3 w-3 mr-1" />
                     Copy
                   </button>
                 </div>
