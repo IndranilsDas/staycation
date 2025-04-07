@@ -16,7 +16,7 @@ import {
   Timestamp,
 } from "firebase/firestore"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { getAuth } from "firebase/auth";
+import { getAuth } from "firebase/auth"
 
 // Firebase configuration
 const firebaseConfig = {
@@ -26,15 +26,14 @@ const firebaseConfig = {
   storageBucket: "staycation-test.firebasestorage.app",
   messagingSenderId: "403901865838",
   appId: "1:403901865838:web:453aa64d217c6dacf52b7f",
-  measurementId: "G-8NZP9KVSZ2"
-};
+  measurementId: "G-8NZP9KVSZ2",
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
-const auth = getAuth(app);
+const auth = getAuth(app)
 
-
-export { auth };
+export { auth }
 
 // Dynamically import Firebase Analytics only when running in the browser
 if (typeof window !== "undefined") {
@@ -66,31 +65,31 @@ const bookingsRef = collection(db, "bookings")
 // Collections functions
 export const fetchCollections = async () => {
   try {
-    console.log("[Firebase] Fetching collections...");
-    const snapshot = await getDocs(collectionsRef);
+    console.log("[Firebase] Fetching collections...")
+    const snapshot = await getDocs(collectionsRef)
     return snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    }));
+    }))
   } catch (error) {
-    console.error("[Firebase] Error fetching collections:", error);
-    return [];
+    console.error("[Firebase] Error fetching collections:", error)
+    return []
   }
-};
+}
 
 export const fetchVillas = async () => {
   try {
-    console.log("[Firebase] Fetching villas...");
-    const snapshot = await getDocs(villasRef);
+    console.log("[Firebase] Fetching villas...")
+    const snapshot = await getDocs(villasRef)
     return snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    }));
+    }))
   } catch (error) {
-    console.error("[Firebase] Error fetching villas:", error);
-    return [];
+    console.error("[Firebase] Error fetching villas:", error)
+    return []
   }
-};
+}
 
 export const fetchVillaById = async (villaId) => {
   try {
@@ -106,11 +105,11 @@ export const fetchCollectionById = async (collectionId) => {
     console.log(`[Firebase] Fetching collection with ID: ${collectionId}`)
     const docRef = doc(collectionsRef, collectionId)
     const docSnap = await getDoc(docRef)
-    
+
     if (docSnap.exists()) {
       const collectionData = {
         id: docSnap.id,
-        ...docSnap.data()
+        ...docSnap.data(),
       }
       console.log("[Firebase] Collection found:", collectionData)
       return collectionData
@@ -332,10 +331,24 @@ export const fetchOffers = async (type = null) => {
 }
 
 // Villa specific functions
-export const saveVilla = async (villaData) => {
+export const saveVilla = async (villaData, isUpdate = false) => {
   try {
-    const docRef = await addDoc(villasRef, villaData)
-    return { id: docRef.id, ...villaData }
+    if (isUpdate && villaData.id) {
+      // If it's an update and we have an ID, use updateDoc
+      const villaRef = doc(db, "villas", villaData.id)
+
+      // Create a copy of villaData without the id field
+      const { id, ...dataToUpdate } = villaData
+
+      await updateDoc(villaRef, dataToUpdate)
+      console.log(`[Firebase] Updated villa with ID: ${id}`)
+      return { id, ...dataToUpdate }
+    } else {
+      // For new villas, create a new document
+      const docRef = await addDoc(villasRef, villaData)
+      console.log(`[Firebase] Created new villa with ID: ${docRef.id}`)
+      return { id: docRef.id, ...villaData }
+    }
   } catch (error) {
     console.error("Error saving villa:", error)
     throw error
@@ -446,18 +459,18 @@ export const fetchRecentBookings = async (months = 3) => {
 
 export async function fetchVillaLocations() {
   try {
-    const querySnapshot = await getDocs(collection(db, "villas"));
-    const locations = [];
+    const querySnapshot = await getDocs(collection(db, "villas"))
+    const locations = []
     querySnapshot.forEach((doc) => {
-      const villaData = doc.data();
+      const villaData = doc.data()
       if (villaData.location) {
-        locations.push(villaData.location);
+        locations.push(villaData.location)
       }
-    });
-    return locations;
+    })
+    return locations
   } catch (error) {
-    console.error("Error fetching villa locations:", error);
-    return [];
+    console.error("Error fetching villa locations:", error)
+    return []
   }
 }
 
@@ -475,14 +488,14 @@ export const saveCollection = async (collectionData) => {
 
 // Upload image to Firebase Storage
 export const uploadImage = async (file, path) => {
-  console.log("inside image upload");
-  
+  console.log("inside image upload")
+
   try {
     const storageRef = ref(storage, path)
     const snapshot = await uploadBytes(storageRef, file)
     const downloadURL = await getDownloadURL(snapshot.ref)
-    console.log(storageRef, snapshot, downloadURL);
-    
+    console.log(storageRef, snapshot, downloadURL)
+
     return downloadURL
   } catch (error) {
     console.error("Error uploading image:", error)
@@ -514,3 +527,4 @@ export const deleteCollection = async (collectionId) => {
 }
 
 export { db, storage }
+
